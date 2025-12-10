@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matchstick Puzzle - Make a Number Greater Than 46</title>
-    <meta name="description" content="Interactive matchstick puzzle game - Move one stick to make a number greater than 46">
+    <title>Matchstick Puzzle Challenge</title>
+    <meta name="description" content="Interactive matchstick puzzle game - Move sticks to solve number challenges">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -28,39 +29,121 @@
         }
 
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .game-container {
-            background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
             backdrop-filter: blur(20px);
             border-radius: 30px;
             padding: 40px 50px;
-            box-shadow: 
-                0 25px 50px rgba(0,0,0,0.3),
-                inset 0 1px 1px rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
         }
 
         h1 {
             color: #FFF8DC;
             font-size: 2.2rem;
             font-weight: 800;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
             letter-spacing: -0.5px;
         }
 
+        .level-badge {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #4A3000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
         .subtitle {
-            color: rgba(255,248,220,0.8);
+            color: rgba(255, 248, 220, 0.8);
             font-size: 1.1rem;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-weight: 400;
+        }
+
+        .challenge-text {
+            color: #FFD700;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .level-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .level-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFF8DC;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .level-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 215, 0, 0.8);
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .level-btn.active {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #4A3000;
+            border-color: #FFD700;
+        }
+
+        .level-btn.completed::after {
+            content: '✓';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            background: #22C55E;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
         }
 
         .puzzle-area {
@@ -68,9 +151,9 @@
             border-radius: 20px;
             padding: 40px;
             margin: 20px 0;
-            box-shadow: 
-                inset 0 4px 20px rgba(0,0,0,0.2),
-                0 10px 30px rgba(0,0,0,0.2);
+            box-shadow:
+                inset 0 4px 20px rgba(0, 0, 0, 0.2),
+                0 10px 30px rgba(0, 0, 0, 0.2);
             position: relative;
             min-height: 200px;
             display: flex;
@@ -94,9 +177,9 @@
             border-radius: 4px;
             cursor: grab;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 
-                2px 2px 8px rgba(0,0,0,0.3),
-                inset 0 1px 1px rgba(255,255,255,0.3);
+            box-shadow:
+                2px 2px 8px rgba(0, 0, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3);
         }
 
         .matchstick::before {
@@ -106,7 +189,7 @@
             height: 12px;
             background: linear-gradient(135deg, #8B0000 0%, #DC143C 50%, #8B0000 100%);
             border-radius: 50% 50% 30% 30%;
-            box-shadow: 0 0 10px rgba(220,20,60,0.5);
+            box-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
         }
 
         .matchstick.horizontal {
@@ -131,9 +214,9 @@
 
         .matchstick:hover {
             transform: scale(1.1);
-            box-shadow: 
-                0 0 20px rgba(255,215,0,0.6),
-                2px 2px 8px rgba(0,0,0,0.3);
+            box-shadow:
+                0 0 20px rgba(255, 215, 0, 0.6),
+                2px 2px 8px rgba(0, 0, 0, 0.3);
             z-index: 100;
         }
 
@@ -144,8 +227,15 @@
         }
 
         @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.8), 2px 2px 8px rgba(0,0,0,0.3); }
-            50% { box-shadow: 0 0 35px rgba(255,215,0,1), 2px 2px 8px rgba(0,0,0,0.3); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 2px 2px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 35px rgba(255, 215, 0, 1), 2px 2px 8px rgba(0, 0, 0, 0.3);
+            }
         }
 
         .matchstick.hidden {
@@ -155,9 +245,9 @@
 
         .drop-zone {
             position: absolute;
-            border: 3px dashed rgba(255,215,0,0.5);
+            border: 3px dashed rgba(255, 215, 0, 0.5);
             border-radius: 6px;
-            background: rgba(255,215,0,0.1);
+            background: rgba(255, 215, 0, 0.1);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -178,8 +268,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { border-color: rgba(255,215,0,0.5); }
-            50% { border-color: rgba(255,215,0,1); }
+
+            0%,
+            100% {
+                border-color: rgba(255, 215, 0, 0.5);
+            }
+
+            50% {
+                border-color: rgba(255, 215, 0, 1);
+            }
         }
 
         .instructions {
@@ -189,47 +286,54 @@
             line-height: 1.6;
         }
 
-        .moves-counter {
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,165,0,0.2) 100%);
-            padding: 12px 25px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+            padding: 12px 20px;
             border-radius: 50px;
-            margin: 15px 0;
-            border: 1px solid rgba(255,215,0,0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
-        .moves-counter span {
+        .stat-box span {
             color: #FFD700;
             font-weight: 700;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
-        .moves-counter label {
-            color: rgba(255,248,220,0.9);
-            font-size: 0.95rem;
+        .stat-box label {
+            color: rgba(255, 248, 220, 0.9);
+            font-size: 0.9rem;
         }
 
         .btn {
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             color: #4A3000;
             border: none;
-            padding: 15px 40px;
+            padding: 15px 35px;
             border-radius: 50px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 10px;
-            box-shadow: 0 8px 25px rgba(255,165,0,0.4);
+            margin: 8px;
+            box-shadow: 0 8px 25px rgba(255, 165, 0, 0.4);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(255,165,0,0.5);
+            box-shadow: 0 12px 35px rgba(255, 165, 0, 0.5);
         }
 
         .btn:active {
@@ -237,13 +341,19 @@
         }
 
         .btn.secondary {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
             color: #FFF8DC;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn.next {
+            background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
         }
 
         .result-message {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
             margin: 20px 0;
             padding: 15px 30px;
@@ -259,23 +369,23 @@
         }
 
         .result-message.success {
-            background: linear-gradient(135deg, rgba(34,197,94,0.3) 0%, rgba(16,185,129,0.3) 100%);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(16, 185, 129, 0.3) 100%);
             color: #86EFAC;
-            border: 1px solid rgba(34,197,94,0.5);
-            text-shadow: 0 0 20px rgba(34,197,94,0.5);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
         }
 
         .result-message.error {
-            background: linear-gradient(135deg, rgba(239,68,68,0.3) 0%, rgba(220,38,38,0.3) 100%);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.3) 100%);
             color: #FCA5A5;
-            border: 1px solid rgba(239,68,68,0.5);
+            border: 1px solid rgba(239, 68, 68, 0.5);
         }
 
         .current-number {
             font-size: 3rem;
             font-weight: 800;
             color: #FFD700;
-            text-shadow: 0 0 30px rgba(255,215,0,0.5);
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
             margin: 10px 0;
         }
 
@@ -301,7 +411,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border: none;
             width: 35px;
             height: 35px;
@@ -313,7 +423,7 @@
         }
 
         .hint-btn:hover {
-            background: rgba(255,215,0,0.3);
+            background: rgba(255, 215, 0, 0.3);
             transform: scale(1.1);
         }
 
@@ -322,7 +432,7 @@
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
             padding: 8px 15px;
             border-radius: 8px;
@@ -338,86 +448,210 @@
             opacity: 1;
         }
 
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22C55E 0%, #16A34A 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            color: rgba(255, 248, 220, 0.7);
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
         @media (max-width: 500px) {
             .game-container {
                 padding: 25px 20px;
             }
+
             h1 {
                 font-size: 1.6rem;
             }
+
             .puzzle-area {
                 padding: 30px 20px;
                 gap: 20px;
             }
+
             .digit {
                 width: 60px;
                 height: 110px;
             }
+
             .matchstick.horizontal {
                 width: 40px;
                 height: 8px;
             }
+
             .matchstick.vertical {
                 width: 8px;
                 height: 40px;
             }
+
+            .level-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="game-container">
-        <h1>🔥 Matchstick Puzzle</h1>
-        <p class="subtitle">Make a number greater than 46</p>
-        
+        <div class="header">
+            <h1>🔥 Matchstick Puzzle</h1>
+            <span class="level-badge" id="levelBadge">Level 1</span>
+        </div>
+
+        <p class="progress-text">Progress: <span id="completedCount">0</span>/<span id="totalCount">10</span> puzzles
+            completed</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="level-selector" id="levelSelector">
+            <!-- Level buttons will be generated here -->
+        </div>
+
+        <p class="challenge-text" id="challengeText">Make a number greater than 46</p>
+
         <div class="puzzle-area" id="puzzleArea">
             <button class="hint-btn" id="hintBtn">
                 💡
                 <span class="tooltip">Click for a hint!</span>
             </button>
-            
-            <!-- Digit 4 -->
-            <div class="digit" id="digit1">
-                <!-- Position markers for segment display -->
-            </div>
-            
-            <!-- Digit 6 -->
-            <div class="digit" id="digit2">
-                <!-- Position markers for segment display -->
-            </div>
+
+            <!-- Digit 1 -->
+            <div class="digit" id="digit1"></div>
+
+            <!-- Digit 2 -->
+            <div class="digit" id="digit2"></div>
         </div>
-        
+
         <div class="instructions">
             Click a matchstick to select it, then click an empty position to move it there.
-            <br>You can only move <strong>ONE</strong> stick!
+            <br>Solve the puzzle by moving the allowed number of sticks!
         </div>
-        
-        <div class="moves-counter">
-            <label>Moves Made:</label>
-            <span id="moveCount">0</span>
-            <label>/ 1</label>
+
+        <div class="stats-row">
+            <div class="stat-box">
+                <label>Moves:</label>
+                <span id="moveCount">0</span>
+                <label>/ <span id="maxMoves">1</span></label>
+            </div>
+            <div class="stat-box">
+                <label>Current:</label>
+                <span id="currentNumber">46</span>
+            </div>
         </div>
-        
-        <div class="current-number" id="currentNumber">46</div>
-        
+
         <div class="result-message" id="resultMessage"></div>
-        
+
         <div>
             <button class="btn" id="checkBtn">Check Answer</button>
-            <button class="btn secondary" id="resetBtn">Reset Puzzle</button>
+            <button class="btn secondary" id="resetBtn">Reset</button>
+            <button class="btn next" id="nextBtn" style="display: none;">Next Puzzle →</button>
         </div>
     </div>
 
     <script>
-        // Matchstick segment positions for digits
-        // 7-segment display layout:
-        //    0
-        //   ---
-        // 1|   |2
-        //   ---  3
-        // 4|   |5
-        //   ---
-        //    6
+        // Puzzle collection - each puzzle has starting digits, challenge type, target, max moves, and hint
+        const puzzles = [
+            {
+                startDigits: [4, 6],
+                challengeType: 'greater',
+                targetValue: 46,
+                maxMoves: 1,
+                hint: "Move one stick from the 4 to make a bigger digit!",
+                solutions: [48, 96, 76, 49] // 4→9 makes 96
+            },
+            {
+                startDigits: [5, 1],
+                challengeType: 'greater',
+                targetValue: 51,
+                maxMoves: 1,
+                hint: "Can you make a 9 from the 5?",
+                solutions: [91, 61, 71, 81]
+            },
+            {
+                startDigits: [1, 3],
+                challengeType: 'greater',
+                targetValue: 13,
+                maxMoves: 1,
+                hint: "What's the biggest digit you can make from 1?",
+                solutions: [73, 43, 19, 18, 17, 15, 14]
+            },
+            {
+                startDigits: [3, 5],
+                challengeType: 'smaller',
+                targetValue: 35,
+                maxMoves: 1,
+                hint: "Try making a smaller first digit!",
+                solutions: [25, 15, 05, 31, 32, 33, 34]
+            },
+            {
+                startDigits: [6, 0],
+                challengeType: 'smaller',
+                targetValue: 60,
+                maxMoves: 1,
+                hint: "Can you turn 6 into something smaller?",
+                solutions: [50, 00, 66, 68, 69]
+            },
+            {
+                startDigits: [1, 4],
+                challengeType: 'greater',
+                targetValue: 14,
+                maxMoves: 1,
+                hint: "Make the 1 into something bigger!",
+                solutions: [74, 44, 94, 19, 18, 17, 16, 15]
+            },
+            {
+                startDigits: [3, 9],
+                challengeType: 'equal',
+                targetValue: 93,
+                maxMoves: 1,
+                hint: "Swap the digits around!",
+                solutions: [93]
+            },
+            {
+                startDigits: [2, 4],
+                challengeType: 'greater',
+                targetValue: 24,
+                maxMoves: 1,
+                hint: "Change 2 to a bigger digit or 4 to 9!",
+                solutions: [34, 94, 29, 28, 27, 26, 25, 84]
+            },
+            {
+                startDigits: [0, 8],
+                challengeType: 'greater',
+                targetValue: 8,
+                maxMoves: 1,
+                hint: "Give the 0 some segments!",
+                solutions: [18, 68, 98, 09, 06, 00]
+            },
+            {
+                startDigits: [7, 1],
+                challengeType: 'equal',
+                targetValue: 17,
+                maxMoves: 2,
+                hint: "Swap digit positions using two moves!",
+                solutions: [17]
+            }
+        ];
 
+        // Matchstick segment positions for digits
         const segmentPositions = {
             horizontal: [
                 { top: 0, left: 15 },      // 0 - top
@@ -446,37 +680,128 @@
         };
 
         // Game state
-        let currentDigits = [4, 6];
+        let currentLevel = 0;
+        let currentDigits = [];
         let selectedStick = null;
         let movesMade = 0;
         let stickPositions = [];
+        let completedLevels = new Set();
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('matchstickProgress');
+            if (saved) {
+                completedLevels = new Set(JSON.parse(saved));
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('matchstickProgress', JSON.stringify([...completedLevels]));
+        }
+
+        // Initialize level selector
+        function initLevelSelector() {
+            const selector = document.getElementById('levelSelector');
+            selector.innerHTML = '';
+
+            puzzles.forEach((puzzle, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'level-btn';
+                btn.textContent = index + 1;
+                btn.dataset.level = index;
+
+                if (completedLevels.has(index)) {
+                    btn.classList.add('completed');
+                }
+
+                if (index === currentLevel) {
+                    btn.classList.add('active');
+                }
+
+                btn.addEventListener('click', () => loadLevel(index));
+                selector.appendChild(btn);
+            });
+
+            updateProgress();
+        }
+
+        // Update progress display
+        function updateProgress() {
+            document.getElementById('completedCount').textContent = completedLevels.size;
+            document.getElementById('totalCount').textContent = puzzles.length;
+            document.getElementById('progressFill').style.width =
+                (completedLevels.size / puzzles.length * 100) + '%';
+        }
+
+        // Load a specific level
+        function loadLevel(levelIndex) {
+            currentLevel = levelIndex;
+            const puzzle = puzzles[levelIndex];
+            currentDigits = [...puzzle.startDigits];
+            selectedStick = null;
+            movesMade = 0;
+            stickPositions = [];
+
+            // Update UI
+            document.getElementById('levelBadge').textContent = `Level ${levelIndex + 1}`;
+            document.getElementById('maxMoves').textContent = puzzle.maxMoves;
+            document.getElementById('moveCount').textContent = '0';
+            document.getElementById('resultMessage').className = 'result-message';
+            document.getElementById('nextBtn').style.display = 'none';
+
+            // Set challenge text
+            const startNum = puzzle.startDigits[0] * 10 + puzzle.startDigits[1];
+            let challengeText = '';
+            switch (puzzle.challengeType) {
+                case 'greater':
+                    challengeText = `Make a number GREATER than ${startNum}`;
+                    break;
+                case 'smaller':
+                    challengeText = `Make a number SMALLER than ${startNum}`;
+                    break;
+                case 'equal':
+                    challengeText = `Make the number equal to ${puzzle.targetValue}`;
+                    break;
+            }
+            document.getElementById('challengeText').textContent = challengeText;
+
+            // Update level selector buttons
+            document.querySelectorAll('.level-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === levelIndex);
+            });
+
+            initPuzzle();
+            updateCurrentNumber();
+        }
 
         // Initialize the puzzle
         function initPuzzle() {
             stickPositions = [];
-            
-            // Create matchsticks for digit 4
-            createDigitMatchsticks(0, 4, 'digit1');
-            
-            // Create matchsticks for digit 6
-            createDigitMatchsticks(1, 6, 'digit2');
-            
+            const puzzle = puzzles[currentLevel];
+
+            // Create matchsticks for digit 1
+            createDigitMatchsticks(0, puzzle.startDigits[0], 'digit1');
+
+            // Create matchsticks for digit 2
+            createDigitMatchsticks(1, puzzle.startDigits[1], 'digit2');
+
             createDropZones();
         }
 
         function createDigitMatchsticks(digitIndex, digit, containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
-            
+
             const segments = digitSegments[digit];
-            
+
             segments.forEach(segIndex => {
                 const stick = document.createElement('div');
                 stick.className = 'matchstick';
-                
+
                 let isHorizontal = segIndex === 0 || segIndex === 3 || segIndex === 6;
                 let pos;
-                
+
                 if (isHorizontal) {
                     stick.classList.add('horizontal');
                     const hIndex = segIndex === 0 ? 0 : (segIndex === 3 ? 1 : 2);
@@ -486,47 +811,47 @@
                     const vIndex = segIndex === 1 ? 0 : (segIndex === 2 ? 1 : (segIndex === 4 ? 2 : 3));
                     pos = segmentPositions.vertical[vIndex];
                 }
-                
+
                 stick.style.top = pos.top + 'px';
                 stick.style.left = pos.left + 'px';
-                
+
                 const stickData = {
                     element: stick,
                     digitIndex: digitIndex,
                     segmentIndex: segIndex,
                     isHorizontal: isHorizontal
                 };
-                
+
                 stick.dataset.stickIndex = stickPositions.length;
                 stickPositions.push(stickData);
-                
+
                 stick.addEventListener('click', () => selectStick(stick));
-                
+
                 container.appendChild(stick);
             });
         }
 
         function createDropZones() {
-            // Create potential drop zones for all empty segment positions
             const containers = ['digit1', 'digit2'];
-            
+
             containers.forEach((containerId, digitIndex) => {
                 const container = document.getElementById(containerId);
-                
-                // Check which segments are currently occupied
+
+                // Remove existing drop zones
+                container.querySelectorAll('.drop-zone').forEach(z => z.remove());
+
                 const occupiedSegments = stickPositions
                     .filter(sp => sp.digitIndex === digitIndex)
                     .map(sp => sp.segmentIndex);
-                
-                // Create drop zones for unoccupied segments
+
                 for (let segIndex = 0; segIndex <= 6; segIndex++) {
                     if (!occupiedSegments.includes(segIndex)) {
                         const zone = document.createElement('div');
                         zone.className = 'drop-zone';
-                        
+
                         let isHorizontal = segIndex === 0 || segIndex === 3 || segIndex === 6;
                         let pos;
-                        
+
                         if (isHorizontal) {
                             zone.classList.add('horizontal');
                             const hIndex = segIndex === 0 ? 0 : (segIndex === 3 ? 1 : 2);
@@ -536,15 +861,15 @@
                             const vIndex = segIndex === 1 ? 0 : (segIndex === 2 ? 1 : (segIndex === 4 ? 2 : 3));
                             pos = segmentPositions.vertical[vIndex];
                         }
-                        
+
                         zone.style.top = (pos.top - 3) + 'px';
                         zone.style.left = (pos.left - 3) + 'px';
                         zone.dataset.digitIndex = digitIndex;
                         zone.dataset.segmentIndex = segIndex;
                         zone.dataset.isHorizontal = isHorizontal;
-                        
+
                         zone.addEventListener('click', () => moveStickToZone(zone));
-                        
+
                         container.appendChild(zone);
                     }
                 }
@@ -552,29 +877,28 @@
         }
 
         function selectStick(stick) {
-            if (movesMade >= 1 && !selectedStick) {
-                showMessage('You can only move one stick!', 'error');
+            const puzzle = puzzles[currentLevel];
+            if (movesMade >= puzzle.maxMoves && !selectedStick) {
+                showMessage(`You can only move ${puzzle.maxMoves} stick${puzzle.maxMoves > 1 ? 's' : ''}!`, 'error');
                 return;
             }
-            
-            // Deselect previous
+
             if (selectedStick) {
                 selectedStick.classList.remove('selected');
                 document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('active'));
             }
-            
+
             if (selectedStick === stick) {
                 selectedStick = null;
                 return;
             }
-            
+
             selectedStick = stick;
             stick.classList.add('selected');
-            
-            // Show compatible drop zones
+
             const stickIndex = parseInt(stick.dataset.stickIndex);
             const stickData = stickPositions[stickIndex];
-            
+
             document.querySelectorAll('.drop-zone').forEach(zone => {
                 const zoneIsHorizontal = zone.dataset.isHorizontal === 'true';
                 if (zoneIsHorizontal === stickData.isHorizontal) {
@@ -585,27 +909,23 @@
 
         function moveStickToZone(zone) {
             if (!selectedStick) return;
-            
+
             const stickIndex = parseInt(selectedStick.dataset.stickIndex);
             const stickData = stickPositions[stickIndex];
-            
+
             const zoneIsHorizontal = zone.dataset.isHorizontal === 'true';
             if (zoneIsHorizontal !== stickData.isHorizontal) return;
-            
-            // Move the stick
+
             const newDigitIndex = parseInt(zone.dataset.digitIndex);
             const newSegmentIndex = parseInt(zone.dataset.segmentIndex);
-            
-            // Remove stick from old position
+
             selectedStick.remove();
-            
-            // Update stick data
+
             stickData.digitIndex = newDigitIndex;
             stickData.segmentIndex = newSegmentIndex;
-            
-            // Add to new container
+
             const container = document.getElementById(newDigitIndex === 0 ? 'digit1' : 'digit2');
-            
+
             let pos;
             if (stickData.isHorizontal) {
                 const hIndex = newSegmentIndex === 0 ? 0 : (newSegmentIndex === 3 ? 1 : 2);
@@ -614,22 +934,20 @@
                 const vIndex = newSegmentIndex === 1 ? 0 : (newSegmentIndex === 2 ? 1 : (newSegmentIndex === 4 ? 2 : 3));
                 pos = segmentPositions.vertical[vIndex];
             }
-            
+
             selectedStick.style.top = pos.top + 'px';
             selectedStick.style.left = pos.left + 'px';
             container.appendChild(selectedStick);
-            
+
             selectedStick.classList.remove('selected');
             selectedStick = null;
-            
+
             movesMade++;
             document.getElementById('moveCount').textContent = movesMade;
-            
-            // Remove all drop zones and recreate
+
             document.querySelectorAll('.drop-zone').forEach(z => z.remove());
             createDropZones();
-            
-            // Update current number display
+
             updateCurrentNumber();
         }
 
@@ -638,7 +956,7 @@
                 .filter(sp => sp.digitIndex === digitIndex)
                 .map(sp => sp.segmentIndex)
                 .sort((a, b) => a - b);
-            
+
             for (let digit = 0; digit <= 9; digit++) {
                 const expectedSegments = [...digitSegments[digit]].sort((a, b) => a - b);
                 if (JSON.stringify(segments) === JSON.stringify(expectedSegments)) {
@@ -651,36 +969,75 @@
         function updateCurrentNumber() {
             const digit1 = getDigitFromSegments(0);
             const digit2 = getDigitFromSegments(1);
-            
+
             let display = '';
             if (digit1 !== null) display += digit1;
             else display += '?';
             if (digit2 !== null) display += digit2;
             else display += '?';
-            
+
             document.getElementById('currentNumber').textContent = display;
         }
 
         function checkAnswer() {
+            const puzzle = puzzles[currentLevel];
             const digit1 = getDigitFromSegments(0);
             const digit2 = getDigitFromSegments(1);
-            
+
             if (digit1 === null || digit2 === null) {
                 showMessage('Invalid number configuration!', 'error');
                 return;
             }
-            
+
             const number = digit1 * 10 + digit2;
-            
-            if (number > 46 && movesMade === 1) {
-                showMessage(`🎉 Correct! ${number} > 46`, 'success');
+            const startNum = puzzle.startDigits[0] * 10 + puzzle.startDigits[1];
+
+            let isCorrect = false;
+            let message = '';
+
+            if (movesMade === 0) {
+                showMessage('Move some sticks first!', 'error');
+                return;
+            }
+
+            if (movesMade > puzzle.maxMoves) {
+                showMessage(`You can only move ${puzzle.maxMoves} stick${puzzle.maxMoves > 1 ? 's' : ''}!`, 'error');
+                return;
+            }
+
+            switch (puzzle.challengeType) {
+                case 'greater':
+                    isCorrect = number > startNum;
+                    message = isCorrect ?
+                        `🎉 Correct! ${number} > ${startNum}` :
+                        `${number} is not greater than ${startNum}!`;
+                    break;
+                case 'smaller':
+                    isCorrect = number < startNum;
+                    message = isCorrect ?
+                        `🎉 Correct! ${number} < ${startNum}` :
+                        `${number} is not smaller than ${startNum}!`;
+                    break;
+                case 'equal':
+                    isCorrect = number === puzzle.targetValue;
+                    message = isCorrect ?
+                        `🎉 Correct! You made ${puzzle.targetValue}!` :
+                        `${number} ≠ ${puzzle.targetValue}!`;
+                    break;
+            }
+
+            if (isCorrect) {
+                showMessage(message, 'success');
+                completedLevels.add(currentLevel);
+                saveProgress();
+                initLevelSelector();
                 createConfetti();
-            } else if (number > 46 && movesMade === 0) {
-                showMessage('Move one stick first!', 'error');
-            } else if (number <= 46) {
-                showMessage(`${number} is not greater than 46!`, 'error');
+
+                if (currentLevel < puzzles.length - 1) {
+                    document.getElementById('nextBtn').style.display = 'inline-block';
+                }
             } else {
-                showMessage('You can only move one stick!', 'error');
+                showMessage(message, 'error');
             }
         }
 
@@ -688,27 +1045,35 @@
             const msg = document.getElementById('resultMessage');
             msg.textContent = text;
             msg.className = 'result-message ' + type + ' show';
-            
-            setTimeout(() => {
-                msg.classList.remove('show');
-            }, 3000);
+
+            if (type !== 'success') {
+                setTimeout(() => {
+                    msg.classList.remove('show');
+                }, 3000);
+            }
         }
 
         function resetPuzzle() {
-            currentDigits = [4, 6];
             selectedStick = null;
             movesMade = 0;
             document.getElementById('moveCount').textContent = '0';
-            document.getElementById('currentNumber').textContent = '46';
             document.getElementById('resultMessage').className = 'result-message';
-            
+            document.getElementById('nextBtn').style.display = 'none';
+
             document.querySelectorAll('.drop-zone').forEach(z => z.remove());
             initPuzzle();
+            updateCurrentNumber();
+        }
+
+        function nextLevel() {
+            if (currentLevel < puzzles.length - 1) {
+                loadLevel(currentLevel + 1);
+            }
         }
 
         function createConfetti() {
             const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'];
-            
+
             for (let i = 0; i < 100; i++) {
                 setTimeout(() => {
                     const confetti = document.createElement('div');
@@ -718,23 +1083,28 @@
                     confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
                     confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
                     document.body.appendChild(confetti);
-                    
+
                     setTimeout(() => confetti.remove(), 4000);
                 }, i * 20);
             }
         }
 
         function showHint() {
-            showMessage('💡 Think: What if you made a 9?', 'success');
+            const puzzle = puzzles[currentLevel];
+            showMessage('💡 ' + puzzle.hint, 'success');
         }
 
         // Event listeners
         document.getElementById('checkBtn').addEventListener('click', checkAnswer);
         document.getElementById('resetBtn').addEventListener('click', resetPuzzle);
+        document.getElementById('nextBtn').addEventListener('click', nextLevel);
         document.getElementById('hintBtn').addEventListener('click', showHint);
 
         // Initialize
-        initPuzzle();
+        loadProgress();
+        initLevelSelector();
+        loadLevel(0);
     </script>
 </body>
+
 </html>
