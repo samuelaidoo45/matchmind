@@ -1,6 +1,6 @@
 # MatchMind 🔥
 
-An interactive matchstick puzzle game where you move matchsticks to solve number challenges.
+An interactive matchstick puzzle game where you move matchsticks to solve number challenges
 
 ## Features
 - 10 unique puzzle levels
