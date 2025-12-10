@@ -448,6 +448,79 @@
             opacity: 1;
         }
 
+        .rotate-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: #4A3000;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            display: none;
+            box-shadow: 0 4px 15px rgba(255, 165, 0, 0.4);
+            z-index: 50;
+        }
+
+        .rotate-btn.visible {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounceIn 0.3s ease;
+        }
+
+        .rotate-btn:hover {
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 0 6px 20px rgba(255, 165, 0, 0.6);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .orientation-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #FFD700;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .orientation-indicator.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
         .progress-bar {
             width: 100%;
             height: 8px;
@@ -532,6 +605,8 @@
                 💡
                 <span class="tooltip">Click for a hint!</span>
             </button>
+            <button class="rotate-btn" id="rotateBtn" title="Rotate matchstick">🔄</button>
+            <div class="orientation-indicator" id="orientationIndicator">Horizontal</div>
 
             <!-- Digit 1 -->
             <div class="digit" id="digit1"></div>
@@ -876,6 +951,9 @@
             });
         }
 
+        // Track the selected stick's intended orientation
+        let selectedStickOrientation = null;
+
         function selectStick(stick) {
             const puzzle = puzzles[currentLevel];
             if (movesMade >= puzzle.maxMoves && !selectedStick) {
@@ -886,10 +964,12 @@
             if (selectedStick) {
                 selectedStick.classList.remove('selected');
                 document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('active'));
+                hideRotateButton();
             }
 
             if (selectedStick === stick) {
                 selectedStick = null;
+                selectedStickOrientation = null;
                 return;
             }
 
@@ -898,11 +978,50 @@
 
             const stickIndex = parseInt(stick.dataset.stickIndex);
             const stickData = stickPositions[stickIndex];
+            selectedStickOrientation = stickData.isHorizontal;
 
+            showRotateButton();
+            highlightAllDropZones();
+        }
+
+        function showRotateButton() {
+            // Keep the orientation indicator but hide the manual rotate button
+            document.getElementById('orientationIndicator').classList.add('visible');
+            document.getElementById('orientationIndicator').textContent = '💡 Click any slot to place';
+        }
+
+        function hideRotateButton() {
+            document.getElementById('rotateBtn').classList.remove('visible');
+            document.getElementById('orientationIndicator').classList.remove('visible');
+        }
+
+        function highlightAllDropZones() {
+            // Highlight ALL drop zones regardless of orientation
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.add('active');
+            });
+        }
+
+        function updateOrientationIndicator() {
+            const indicator = document.getElementById('orientationIndicator');
+            indicator.textContent = selectedStickOrientation ? '↔ Horizontal' : '↕ Vertical';
+        }
+
+        function rotateSelectedStick() {
+            if (!selectedStick) return;
+
+            selectedStickOrientation = !selectedStickOrientation;
+            updateOrientationIndicator();
+            highlightMatchingDropZones();
+        }
+
+        function highlightMatchingDropZones() {
             document.querySelectorAll('.drop-zone').forEach(zone => {
                 const zoneIsHorizontal = zone.dataset.isHorizontal === 'true';
-                if (zoneIsHorizontal === stickData.isHorizontal) {
+                if (zoneIsHorizontal === selectedStickOrientation) {
                     zone.classList.add('active');
+                } else {
+                    zone.classList.remove('active');
                 }
             });
         }
@@ -914,15 +1033,21 @@
             const stickData = stickPositions[stickIndex];
 
             const zoneIsHorizontal = zone.dataset.isHorizontal === 'true';
-            if (zoneIsHorizontal !== stickData.isHorizontal) return;
 
+            // Auto-adapt to the target zone's orientation
             const newDigitIndex = parseInt(zone.dataset.digitIndex);
             const newSegmentIndex = parseInt(zone.dataset.segmentIndex);
 
             selectedStick.remove();
 
+            // Automatically set orientation to match the drop zone
+            stickData.isHorizontal = zoneIsHorizontal;
             stickData.digitIndex = newDigitIndex;
             stickData.segmentIndex = newSegmentIndex;
+
+            // Update the matchstick's CSS class for orientation
+            selectedStick.classList.remove('horizontal', 'vertical');
+            selectedStick.classList.add(stickData.isHorizontal ? 'horizontal' : 'vertical');
 
             const container = document.getElementById(newDigitIndex === 0 ? 'digit1' : 'digit2');
 
@@ -941,6 +1066,8 @@
 
             selectedStick.classList.remove('selected');
             selectedStick = null;
+            selectedStickOrientation = null;
+            hideRotateButton();
 
             movesMade++;
             document.getElementById('moveCount').textContent = movesMade;
@@ -949,6 +1076,11 @@
             createDropZones();
 
             updateCurrentNumber();
+
+            // Auto-check answer after move
+            setTimeout(() => {
+                autoCheckAnswer();
+            }, 300);
         }
 
         function getDigitFromSegments(digitIndex) {
@@ -977,6 +1109,50 @@
             else display += '?';
 
             document.getElementById('currentNumber').textContent = display;
+        }
+
+        // Auto-check answer silently after each move
+        function autoCheckAnswer() {
+            const puzzle = puzzles[currentLevel];
+            const digit1 = getDigitFromSegments(0);
+            const digit2 = getDigitFromSegments(1);
+
+            // Don't show errors for invalid configurations during auto-check
+            if (digit1 === null || digit2 === null) return;
+            if (movesMade === 0 || movesMade > puzzle.maxMoves) return;
+
+            const number = digit1 * 10 + digit2;
+            const startNum = puzzle.startDigits[0] * 10 + puzzle.startDigits[1];
+
+            let isCorrect = false;
+            let message = '';
+
+            switch (puzzle.challengeType) {
+                case 'greater':
+                    isCorrect = number > startNum;
+                    message = `🎉 Correct! ${number} > ${startNum}`;
+                    break;
+                case 'smaller':
+                    isCorrect = number < startNum;
+                    message = `🎉 Correct! ${number} < ${startNum}`;
+                    break;
+                case 'equal':
+                    isCorrect = number === puzzle.targetValue;
+                    message = `🎉 Correct! You made ${puzzle.targetValue}!`;
+                    break;
+            }
+
+            if (isCorrect) {
+                showMessage(message, 'success');
+                completedLevels.add(currentLevel);
+                saveProgress();
+                initLevelSelector();
+                createConfetti();
+
+                if (currentLevel < puzzles.length - 1) {
+                    document.getElementById('nextBtn').style.display = 'inline-block';
+                }
+            }
         }
 
         function checkAnswer() {
@@ -1099,6 +1275,7 @@
         document.getElementById('resetBtn').addEventListener('click', resetPuzzle);
         document.getElementById('nextBtn').addEventListener('click', nextLevel);
         document.getElementById('hintBtn').addEventListener('click', showHint);
+        document.getElementById('rotateBtn').addEventListener('click', rotateSelectedStick);
 
         // Initialize
         loadProgress();
