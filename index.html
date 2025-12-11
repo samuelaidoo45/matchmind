@@ -441,6 +441,75 @@
             }
         }
 
+        /* Overlay Styles */
+        .overlay-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .overlay-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .overlay-btn {
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .overlay-btn-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            font-weight: 700;
+            padding: 15px 40px;
+        }
+
+        .overlay-btn-success {
+            background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);
+            color: #064E3B;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+            font-weight: 700;
+            padding: 15px 40px;
+        }
+
+        .overlay-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .overlay-btn-danger {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            .overlay-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .overlay-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
         .hint-btn {
             position: absolute;
             top: 10px;
@@ -1242,15 +1311,7 @@
             if (!overlay) {
                 overlay = document.createElement('div');
                 overlay.id = 'wrongOverlay';
-                overlay.style.cssText = `
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 20px;
-                    width: 100%;
-                    padding: 40px 20px;
-                `;
+                overlay.className = 'overlay-container';
                 puzzleArea.appendChild(overlay);
             }
 
@@ -1260,30 +1321,9 @@
                 <div style="color: #E2E8F0; font-size: 1rem; text-align: center; max-width: 300px;">
                     Great job! Ready for the next challenge?
                 </div>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button onclick="resetPuzzle()" style="
-                        background: rgba(255, 255, 255, 0.1);
-                        border: 1px solid rgba(255, 255, 255, 0.2);
-                        padding: 15px 30px;
-                        border-radius: 12px;
-                        color: white;
-                        font-size: 1.1rem;
-                        font-weight: 600;
-                        cursor: pointer;
-                        transition: all 0.3s ease;
-                    ">🔄 Replay</button>
-                    <button onclick="nextLevel()" style="
-                        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-                        border: none;
-                        padding: 15px 40px;
-                        border-radius: 12px;
-                        color: white;
-                        font-size: 1.1rem;
-                        font-weight: 700;
-                        cursor: pointer;
-                        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-                        transition: all 0.3s ease;
-                    ">Next Level ➡️</button>
+                <div class="overlay-buttons">
+                    <button onclick="resetPuzzle()" class="overlay-btn overlay-btn-secondary">🔄 Replay</button>
+                    <button onclick="nextLevel()" class="overlay-btn overlay-btn-primary">Next Level ➡️</button>
                 </div>
             `;
             overlay.style.display = 'flex';
@@ -1309,15 +1349,7 @@
             if (!overlay) {
                 overlay = document.createElement('div');
                 overlay.id = 'wrongOverlay';
-                overlay.style.cssText = `
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 20px;
-                    width: 100%;
-                    padding: 40px 20px;
-                `;
+                overlay.className = 'overlay-container';
                 puzzleArea.appendChild(overlay);
             }
 
@@ -1327,19 +1359,7 @@
                 <div style="color: #E2E8F0; font-size: 1rem; text-align: center; max-width: 300px;">
                     You've solved all ${puzzles.length} puzzles! Incredible work!
                 </div>
-                <button onclick="fullReset()" style="
-                    background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);
-                    border: none;
-                    padding: 15px 40px;
-                    border-radius: 12px;
-                    color: #064E3B;
-                    font-size: 1.1rem;
-                    font-weight: 700;
-                    cursor: pointer;
-                    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-                    transition: all 0.3s ease;
-                    margin-top: 10px;
-                ">🔄 Play Again</button>
+                <button onclick="fullReset()" class="overlay-btn overlay-btn-success" style="margin-top: 10px;">🔄 Play Again</button>
             `;
             overlay.style.display = 'flex';
         }
@@ -1372,15 +1392,7 @@
             if (!overlay) {
                 overlay = document.createElement('div');
                 overlay.id = 'wrongOverlay';
-                overlay.style.cssText = `
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 20px;
-                    width: 100%;
-                    padding: 40px 20px;
-                `;
+                overlay.className = 'overlay-container';
                 puzzleArea.appendChild(overlay);
             }
 
@@ -1388,18 +1400,7 @@
                 <div style="font-size: 4rem;">❌</div>
                 <div style="color: #F87171; font-size: 1.5rem; font-weight: 700; text-align: center;">Incorrect</div>
                 <div style="color: #E2E8F0; font-size: 1rem; text-align: center; max-width: 300px;">${message}</div>
-                <button onclick="resetPuzzle()" style="
-                    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-                    border: none;
-                    padding: 12px 30px;
-                    border-radius: 10px;
-                    color: white;
-                    font-size: 1rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
-                    transition: all 0.3s ease;
-                ">Try Again</button>
+                <button onclick="resetPuzzle()" class="overlay-btn overlay-btn-danger">Try Again</button>
             `;
             overlay.style.display = 'flex';
         }
