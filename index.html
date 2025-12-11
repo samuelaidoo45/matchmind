@@ -1203,8 +1203,16 @@
                 initLevelSelector();
                 createConfetti();
 
-                if (currentLevel < puzzles.length - 1) {
-                    document.getElementById('nextBtn').style.display = 'inline-block';
+                // Check if all levels are completed
+                if (completedLevels.size === puzzles.length) {
+                    setTimeout(() => {
+                        showGameComplete();
+                    }, 1000);
+                } else if (currentLevel < puzzles.length - 1) {
+                    // Show level complete overlay instead of just the button
+                    setTimeout(() => {
+                        showLevelComplete();
+                    }, 500);
                 }
             } else {
                 // Wrong answer - hide matchsticks and show reset button
@@ -1214,7 +1222,137 @@
             }
         }
 
-        // Show wrong state: hide matchsticks and display reset button in puzzle area
+        // Show level complete overlay
+        function showLevelComplete() {
+            const puzzleArea = document.getElementById('puzzleArea');
+            const digit1Container = document.getElementById('digit1');
+            const digit2Container = document.getElementById('digit2');
+
+            // Hide the digit containers
+            digit1Container.style.display = 'none';
+            digit2Container.style.display = 'none';
+
+            // Hide hint and rotate buttons
+            document.getElementById('hintBtn').style.display = 'none';
+            document.getElementById('rotateBtn').style.display = 'none';
+            document.getElementById('orientationIndicator').style.display = 'none';
+
+            // Create overlay if it doesn't exist
+            let overlay = document.getElementById('wrongOverlay'); // Reuse the same overlay container
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'wrongOverlay';
+                overlay.style.cssText = `
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 20px;
+                    width: 100%;
+                    padding: 40px 20px;
+                `;
+                puzzleArea.appendChild(overlay);
+            }
+
+            overlay.innerHTML = `
+                <div style="font-size: 4rem;">🎉</div>
+                <div style="color: #4ADE80; font-size: 1.5rem; font-weight: 700; text-align: center;">Level Completed!</div>
+                <div style="color: #E2E8F0; font-size: 1rem; text-align: center; max-width: 300px;">
+                    Great job! Ready for the next challenge?
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button onclick="resetPuzzle()" style="
+                        background: rgba(255, 255, 255, 0.1);
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        padding: 15px 30px;
+                        border-radius: 12px;
+                        color: white;
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    ">🔄 Replay</button>
+                    <button onclick="nextLevel()" style="
+                        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+                        border: none;
+                        padding: 15px 40px;
+                        border-radius: 12px;
+                        color: white;
+                        font-size: 1.1rem;
+                        font-weight: 700;
+                        cursor: pointer;
+                        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+                        transition: all 0.3s ease;
+                    ">Next Level ➡️</button>
+                </div>
+            `;
+            overlay.style.display = 'flex';
+        }
+
+        // Show game complete overlay
+        function showGameComplete() {
+            const puzzleArea = document.getElementById('puzzleArea');
+            const digit1Container = document.getElementById('digit1');
+            const digit2Container = document.getElementById('digit2');
+
+            // Hide the digit containers
+            digit1Container.style.display = 'none';
+            digit2Container.style.display = 'none';
+
+            // Hide hint and rotate buttons
+            document.getElementById('hintBtn').style.display = 'none';
+            document.getElementById('rotateBtn').style.display = 'none';
+            document.getElementById('orientationIndicator').style.display = 'none';
+
+            // Create overlay if it doesn't exist
+            let overlay = document.getElementById('wrongOverlay'); // Reuse the same overlay container
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'wrongOverlay';
+                overlay.style.cssText = `
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 20px;
+                    width: 100%;
+                    padding: 40px 20px;
+                `;
+                puzzleArea.appendChild(overlay);
+            }
+
+            overlay.innerHTML = `
+                <div style="font-size: 4rem;">🏆</div>
+                <div style="color: #4ADE80; font-size: 1.5rem; font-weight: 700; text-align: center;">Game Completed!</div>
+                <div style="color: #E2E8F0; font-size: 1rem; text-align: center; max-width: 300px;">
+                    You've solved all ${puzzles.length} puzzles! Incredible work!
+                </div>
+                <button onclick="fullReset()" style="
+                    background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);
+                    border: none;
+                    padding: 15px 40px;
+                    border-radius: 12px;
+                    color: #064E3B;
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+                    transition: all 0.3s ease;
+                    margin-top: 10px;
+                ">🔄 Play Again</button>
+            `;
+            overlay.style.display = 'flex';
+        }
+
+        function fullReset() {
+            completedLevels.clear();
+            saveProgress();
+            shufflePuzzles(); // Re-shuffle for a new game!
+            initLevelSelector();
+            updateProgress();
+            loadLevel(0);
+            hideWrongState(); // Reuse this to hide the overlay and restore UI
+        }
         function showWrongState(message) {
             const puzzleArea = document.getElementById('puzzleArea');
             const digit1Container = document.getElementById('digit1');
@@ -1229,12 +1367,12 @@
             document.getElementById('rotateBtn').style.display = 'none';
             document.getElementById('orientationIndicator').style.display = 'none';
 
-            // Create wrong state overlay if it doesn't exist
-            let wrongOverlay = document.getElementById('wrongOverlay');
-            if (!wrongOverlay) {
-                wrongOverlay = document.createElement('div');
-                wrongOverlay.id = 'wrongOverlay';
-                wrongOverlay.style.cssText = `
+            // Create overlay if it doesn't exist
+            let overlay = document.getElementById('wrongOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'wrongOverlay';
+                overlay.style.cssText = `
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -1243,44 +1381,47 @@
                     width: 100%;
                     padding: 40px 20px;
                 `;
-                puzzleArea.appendChild(wrongOverlay);
+                puzzleArea.appendChild(overlay);
             }
 
-            wrongOverlay.innerHTML = `
-                <div style="font-size: 3rem;">❌</div>
-                <div style="color: #FCA5A5; font-size: 1.1rem; font-weight: 600; text-align: center;">${message}</div>
+            overlay.innerHTML = `
+                <div style="font-size: 4rem;">❌</div>
+                <div style="color: #F87171; font-size: 1.5rem; font-weight: 700; text-align: center;">Incorrect</div>
+                <div style="color: #E2E8F0; font-size: 1rem; text-align: center; max-width: 300px;">${message}</div>
                 <button onclick="resetPuzzle()" style="
-                    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
                     border: none;
-                    padding: 15px 40px;
-                    border-radius: 12px;
-                    color: #4A3000;
-                    font-size: 1.1rem;
-                    font-weight: 700;
+                    padding: 12px 30px;
+                    border-radius: 10px;
+                    color: white;
+                    font-size: 1rem;
+                    font-weight: 600;
                     cursor: pointer;
-                    box-shadow: 0 4px 15px rgba(255, 165, 0, 0.4);
+                    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
                     transition: all 0.3s ease;
-                ">🔄 Try Again</button>
+                ">Try Again</button>
             `;
-            wrongOverlay.style.display = 'flex';
+            overlay.style.display = 'flex';
         }
 
         // Hide wrong state and restore puzzle
         function hideWrongState() {
             const digit1Container = document.getElementById('digit1');
             const digit2Container = document.getElementById('digit2');
-            const wrongOverlay = document.getElementById('wrongOverlay');
+            const overlay = document.getElementById('wrongOverlay');
 
             // Show the digit containers
-            digit1Container.style.display = '';
-            digit2Container.style.display = '';
+            digit1Container.style.display = 'flex';
+            digit2Container.style.display = 'flex';
 
-            // Show hint button
-            document.getElementById('hintBtn').style.display = '';
+            // Show hint and rotate buttons
+            document.getElementById('hintBtn').style.display = 'flex';
+            document.getElementById('rotateBtn').style.display = 'flex';
+            document.getElementById('orientationIndicator').style.display = 'block';
 
-            // Hide wrong overlay
-            if (wrongOverlay) {
-                wrongOverlay.style.display = 'none';
+            // Hide overlay
+            if (overlay) {
+                overlay.style.display = 'none';
             }
         }
 
@@ -1381,6 +1522,7 @@
         function nextLevel() {
             if (currentLevel < puzzles.length - 1) {
                 loadLevel(currentLevel + 1);
+                hideWrongState();
             }
         }
 
@@ -1412,7 +1554,24 @@
         document.getElementById('hintBtn').addEventListener('click', showHint);
         document.getElementById('rotateBtn').addEventListener('click', rotateSelectedStick);
 
+        // Shuffle puzzles 2-10 (index 1-9), keep Level 1 (index 0) fixed
+        function shufflePuzzles() {
+            const puzzlesToShuffle = puzzles.slice(1); // Get puzzles 2-10
+
+            // Fisher-Yates shuffle
+            for (let i = puzzlesToShuffle.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [puzzlesToShuffle[i], puzzlesToShuffle[j]] = [puzzlesToShuffle[j], puzzlesToShuffle[i]];
+            }
+
+            // Put shuffled puzzles back (keeping index 0 untouched)
+            for (let i = 0; i < puzzlesToShuffle.length; i++) {
+                puzzles[i + 1] = puzzlesToShuffle[i];
+            }
+        }
+
         // Initialize
+        shufflePuzzles(); // Randomize puzzles 2-10
         loadProgress();
         initLevelSelector();
         loadLevel(0);
